@@ -5,6 +5,14 @@ Version 0.4.3
 See LICENSE for license details.
 */
 
+abstract class dbFacile_Exception extends Exception {
+
+}
+
+class dbFacile_ConnectException extends dbFacile_Exception {
+
+}
+
 abstract class dbFacile {
 	protected $connection; // handle to Database connection
 	protected $query;
@@ -644,6 +652,8 @@ class dbFacile_mssql extends dbFacile {
 
 	protected function _open($database, $user, $password, $host) {
 		$this->connection = mssql_connect($host, $user, $password);
+		if (!$this->connection)
+			throw new dbFacile_ConnectException($this->_error());
 		if($this->connection)
 			mssql_select_db($database, $this->connection);
 		//$this->buildSchema();
@@ -774,6 +784,8 @@ class dbFacile_mysql extends dbFacile {
 	protected function _open($database, $user, $password, $host) {
 		$this->database = $database;
 		$this->connection = mysql_connect($host, $user, $password);
+		if (!$this->connection)
+			throw new dbFacile_ConnectException($this->_error());
 		if($this->connection)
 			mysql_select_db($database, $this->connection);
 		//$this->buildSchema();
@@ -1018,6 +1030,9 @@ class dbFacile_sqlite extends dbFacile {
 
 	protected function _open($database) {
 		$this->connection = sqlite_open($database);
+		if (!$this->connection)
+			// do not use $this->_error() as $this->connection is not available
+			throw new dbFacile_ConnectException();
 		//$this->buildSchema();
 		return $this->connection;
 	}
