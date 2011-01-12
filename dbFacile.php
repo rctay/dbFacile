@@ -178,15 +178,11 @@ abstract class dbFacile {
 
 		$sql = 'insert into ' . $table . ' (' . implode(',', $this->_quoteFields(array_keys($data))) . ') values(' . implode(',', $this->placeHolders($data)) . ')';
 
-		$this->beginTransaction();	
 		if($this->execute($sql, $data)) {
 			$id = $this->_lastID($table);
-			$this->commitTransaction();
 			return $id;
-		} else {
-			$this->rollbackTransaction();
-			return false;
 		}
+		return false;
 	}
 
 	/*
