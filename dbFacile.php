@@ -13,6 +13,10 @@ class dbFacile_ConnectException extends dbFacile_Exception {
 
 }
 
+class dbFacile_SelectDatabaseException extends dbFacile_Exception {
+
+}
+
 abstract class dbFacile {
 	protected $connection; // handle to Database connection
 	protected $query;
@@ -654,8 +658,8 @@ class dbFacile_mssql extends dbFacile {
 		$this->connection = mssql_connect($host, $user, $password);
 		if (!$this->connection)
 			throw new dbFacile_ConnectException($this->_error());
-		if($this->connection)
-			mssql_select_db($database, $this->connection);
+		if (!mssql_select_db($database, $this->connection))
+			throw new dbFacile_SelectDatabaseException($this->_error());
 		//$this->buildSchema();
 		return $this->connection;
 	}
@@ -786,8 +790,8 @@ class dbFacile_mysql extends dbFacile {
 		$this->connection = mysql_connect($host, $user, $password);
 		if (!$this->connection)
 			throw new dbFacile_ConnectException($this->_error());
-		if($this->connection)
-			mysql_select_db($database, $this->connection);
+		if (!mysql_select_db($database, $this->connection))
+			throw new dbFacile_SelectDatabaseException($this->_error());
 		//$this->buildSchema();
 		return $this->connection;
 	}
